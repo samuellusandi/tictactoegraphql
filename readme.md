@@ -21,7 +21,7 @@ mutation makeGame {
 }
 ```
 6. Create the subscription
-```
+```graphql
 subscription boardSubscription {
   boardMutated(boardId:"BoardID") {
     id
@@ -32,7 +32,7 @@ subscription boardSubscription {
 }
 ```
 7. Open a new tab to start "playing" by invoking the flipTile mutation. The player ID is the current ID whose turn it is (it will throw error if it's not the player's turn). The index is a 0 ~ 8 index that denote the tile that you want to change.
-```
+```graphql
 mutation flipTile {
   flipTile(playerId:"PlayerID", boardId:"BoardID", index: INDEX) {
     id
