@@ -71,13 +71,13 @@ export const resolvers = {
                 throw Error('No games found with that id.');
             }
             let board = games[boardId];
-            if (!board.hasEmptySpace()) {
-                throw Error('This board has no more empty space! It\'s likely a draw!');
-            }
 
             let winner: string | undefined = board.getWinner();
             if (winner) {
                 throw Error('This board already has a winner!');
+            }
+            if (!board.hasEmptySpace()) {
+                throw Error('This board has no more empty space! It\'s likely a draw!');
             }
             board.flipTile(playerId, index);
             winner = board.getWinner();
