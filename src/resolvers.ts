@@ -68,12 +68,6 @@ export const resolvers = {
             let board = games[boardId];
 
             let winner: string | undefined = board.getWinner();
-            if (winner) {
-                throw Error('This board already has a winner!');
-            }
-            if (!board.hasEmptySpace()) {
-                throw Error('This board has no more empty space! It\'s likely a draw!');
-            }
             board.flipTile(playerId, index);
             winner = board.getWinner();
             let boardValue = {

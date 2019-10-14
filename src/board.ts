@@ -55,6 +55,9 @@ export class Board {
         if (this.hasWinner()) {
             throw Error('This board already has a winner.');
         }
+        if (!this.hasEmptySpace()) {
+            throw Error('The board is full: it\'s more than likely a draw!');
+        }
         if (!this.playerIds.includes(playerId)) {
             throw Error('Player not recognized.');
         }
