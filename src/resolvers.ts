@@ -95,7 +95,7 @@ export const resolvers = {
                 turnId: board.getCurrentTurnId(),
                 winner: winner ? winner : null,
             }
-            pubsub.publish('board_state_updated', { boardMutated: boardValue });
+            pubsub.publish(BOARD_STATE_UPDATED, { boardMutated: boardValue });
             return boardValue;
         },
 
