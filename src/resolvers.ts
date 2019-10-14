@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { Board } from "./board";
 import { PubSub, withFilter } from 'graphql-subscriptions';
+import { UserInputError } from 'apollo-server';
 
 const games: Board[] = [];
 const players: any[] = [];
@@ -46,7 +47,7 @@ export const resolvers = {
 
         getBoard: (root: any, { id }: { id: string }, context: any) => {
             if (!games[id]) {
-                throw Error('Can\'t find game.');
+                throw new UserInputError('Can\'t find game.');
             }
             let board: Board = games[id];
             let winner: string | undefined = board.getWinner();
@@ -63,12 +64,16 @@ export const resolvers = {
     Mutation: {
         flipTile: (root: any, { playerId, boardId, index }: { playerId: string, boardId: string, index: number }, { pubsub }: { pubsub: PubSub }) => {
             if (!games[boardId]) {
-                throw Error('No games found with that id.');
+                throw new UserInputError('No games found with that id.');
             }
             let board = games[boardId];
 
             let winner: string | undefined = board.getWinner();
-            board.flipTile(playerId, index);
+            try {
+                board.flipTile(playerId, index);
+            } catch (e) {
+                throw new UserInputError(e);
+            }
             winner = board.getWinner();
             let boardValue = {
                 id: boardId,
@@ -89,7 +94,7 @@ export const resolvers = {
 
         makeGame: (root: any, { player1Id, player2Id }: { player1Id: string, player2Id: string }) => {
             if (!(players[player1Id] && players[player2Id])) {
-                throw Error('At least one player is nonexistent');
+                throw new UserInputError('At least one player is nonexistent');
             }
             let boardId: string = generateId();
             let board = new Board(boardId, [player1Id, player2Id]);
@@ -109,7 +114,12 @@ export const resolvers = {
     Subscription: {
         boardMutated: {
             subscribe: withFilter(
-                (root: any, args: any, { pubsub }: { pubsub: PubSub }) => pubsub.asyncIterator(BOARD_STATE_UPDATED),
+                (root: any, { boardId }: { boardId: string }, { pubsub }: { pubsub: PubSub }) => {
+                    if (!games[boardId]) {
+                        throw new UserInputError('Board not found.');
+                    }
+                    return pubsub.asyncIterator(BOARD_STATE_UPDATED);
+                },
                 (payload: any, variables: any) => {
                     return payload.boardMutated.id === variables.boardId;
                 }

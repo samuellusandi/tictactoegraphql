@@ -4,7 +4,7 @@ export class Board {
 
     private id: string;
     private board: number[];
-    private turn: string;
+    private turn: number;
     private playerIds: string[];
 
     public constructor(id: string, playerIds: string[]) {
@@ -18,7 +18,7 @@ export class Board {
             0, 0, 0,
         ];
         this.playerIds = playerIds;
-        this.turn = playerIds[0];
+        this.turn = 1;
     }
 
     public getId(): string {
@@ -26,7 +26,7 @@ export class Board {
     }
 
     public getCurrentTurnId(): string {
-        return this.turn;
+        return this.playerIds[this.turn % 2];
     }
 
     public getBoard(): number[] {
@@ -61,21 +61,20 @@ export class Board {
         if (!this.playerIds.includes(playerId)) {
             throw Error('Player not recognized.');
         }
-        if (playerId !== this.turn) {
+        if (playerId !== this.playerIds[this.turn % 2]) {
             throw Error('Not the player\'s turn.');
         }
         if (location < 0 || location >= 9) {
             throw Error('Index too big, must be between 0 and 8 inclusive.');
         }
-        if (this.board[location] === Board.PLAYER_1_SYMBOL ||
-            this.board[location] === Board.PLAYER_2_SYMBOL) {
+        if (this.board[location] !== 0) {
             throw Error('Board has been set. Pick another block.');
         }
 
-        this.board[location] = this.playerIds.indexOf(playerId) === 0
+        this.board[location] = this.turn % 2
             ? Board.PLAYER_1_SYMBOL
             : Board.PLAYER_2_SYMBOL;
-        this.flipTurn(playerId);
+        this.addTurn();
     }
 
     public getWinner(): string | undefined {
@@ -113,9 +112,7 @@ export class Board {
         );
     }
 
-    private flipTurn(playerId: string): void {
-        this.turn = playerId === this.playerIds[0]
-            ? this.playerIds[1]
-            : this.playerIds[0];
+    private addTurn(): void {
+        this.turn += 1;
     }
 }
