@@ -29,9 +29,11 @@ export const resolvers = {
 
         getAllBoards: () => {
             let boards: any[] = [];
-            games.forEach((gameBoard) => {
+            let keys = Object.keys(games);
+            keys.forEach((key) => {
+                let gameBoard = games[key];
                 let winner: string | undefined = gameBoard.getWinner();
-                return boards.push({
+                boards.push({
                     id: gameBoard.getId(),
                     playerIds: gameBoard.getPlayerIds(),
                     boardState: gameBoard.getBoard(),
