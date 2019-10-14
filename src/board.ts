@@ -37,6 +37,20 @@ export class Board {
         return this.playerIds;
     }
 
+    public countEmptySpace(): number {
+        let count = 0;
+        for (let i = 0; i < this.board.length; ++i) {
+            if (this.board[i] === 0) {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    public hasEmptySpace(): boolean {
+        return this.countEmptySpace() > 0;
+    }
+
     public flipTile(playerId: string, location: number): void {
         if (this.hasWinner()) {
             throw Error('This board already has a winner.');

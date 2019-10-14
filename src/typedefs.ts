@@ -18,7 +18,7 @@ export const typedefs = gql`
 
     type Mutation {
         flipTile(playerId: String!, boardId: String!, index: Int!): Board
-        makePlayer: [String]
+        makePlayer: String!
         makeGame(player1Id: String!, player2Id: String!): Board
     }
 

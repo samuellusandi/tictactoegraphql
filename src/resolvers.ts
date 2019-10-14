@@ -7,22 +7,7 @@ const players: any[] = [];
 const BOARD_STATE_UPDATED = 'board_state_updated';
 
 function generateId(): string {
-    const count = 20;
-    const arrays = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
-    const rnd = crypto.randomBytes(count);
-    const value = new Array(count);
-    const len = Math.min(256, arrays.length);
-    const d = 256 / len;
-
-    for (let i = 0; i < count; i++) {
-        value[i] = arrays[Math.floor(rnd[i] / d)];
-    }
-
-    return value.join('');
-}
-
-function generateToken(): string {
-    const count = 255;
+    const count = 30;
     const arrays = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
     const rnd = crypto.randomBytes(count);
     const value = new Array(count);
@@ -86,8 +71,16 @@ export const resolvers = {
                 throw Error('No games found with that id.');
             }
             let board = games[boardId];
-            board.flipTile(playerId, index);
+            if (!board.hasEmptySpace()) {
+                throw Error('This board has no more empty space! It\'s likely a draw!');
+            }
+
             let winner: string | undefined = board.getWinner();
+            if (winner) {
+                throw Error('This board already has a winner!');
+            }
+            board.flipTile(playerId, index);
+            winner = board.getWinner();
             let boardValue = {
                 id: boardId,
                 playerIds: board.getPlayerIds(),
@@ -100,10 +93,9 @@ export const resolvers = {
         },
 
         makePlayer: () => {
-            let token: string = generateToken();
             let id: string = generateId();
-            players[id] = token;
-            return [id, token];
+            players[id] = true;
+            return id;
         },
 
         makeGame: (root: any, { player1Id, player2Id }: { player1Id: string, player2Id: string }) => {
