@@ -58,13 +58,6 @@ export const resolvers = {
                 winner: winner ? winner : null,
             }
         },
-
-        impersonate: (root: any, { id }: { id: string }, context: any) => {
-            if (players[id]) {
-                return players[id];
-            }
-            throw Error('No such player ID.');
-        },
     },
 
     Mutation: {

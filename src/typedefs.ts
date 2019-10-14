@@ -13,7 +13,6 @@ export const typedefs = gql`
         getPlayerIds: [String]!
         getAllBoards: [Board]!
         getBoard(id: String!): Board
-        impersonate(playerId: String!): String
     }
 
     type Mutation {
